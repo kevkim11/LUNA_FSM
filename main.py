@@ -11,4 +11,5 @@ if __name__=="__main__":
         timeInterval = 1
         while(startTime+timeInterval > clock()): # MAKES SURE TO WAIT ONE SECOND so that it executes literally every second
             pass
+        print i
         l.Execute()

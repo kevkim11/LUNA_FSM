@@ -18,3 +18,6 @@ class Transition(object):
 class Restart_Clicked(Transition):
     def __init__(self, FSM):
         super(Restart_Clicked, self).__init__(FSM)
+
+    def Execute(self):
+        pass

@@ -90,15 +90,25 @@ class SystemStartup(State):
         Randomly choose if the robot is going to to Vacuum or go to sleep.
         :return:
         """
-        logging.info("System is On")
+        logging.info("System is in SystemStart State")
         if self.startTime + self.timer <= clock():
-            if not (randint(1,3)%2):
+            rand_num = randint(0,1)
+            if (rand_num) == 0:
+                # system_startup_finished() / S
+                self.FSM.ToTransition("toInitializedReagents")
+            elif (rand_num == 1):
+                # error() / S
                 self.FSM.ToTransition("toStopped")
-            else:
-                self.FSM.ToTransition("toSystemStartup")
+            # elif (rand_num == 2):
+            #     # power_loss() / S
+            #     pass
+            # elif (rand_num == 3):
+            #     # user_click_shutdown
+            #     pass
 
     def Exit(self):
         logging.info("System Startup exit")
+
 
 class InitializeReagent(State):
     """
@@ -125,7 +135,15 @@ class InitializeReagent(State):
         logging.info("enter")
 
     def Execute(self):
-        logging.info("System is Initzlie Reagent")
+        logging.info("System is Initialize Reagent")
+        if self.startTime + self.timer <= clock():
+            rand_num = randint(0,1)
+            if (rand_num) == 0:
+                # system_startup_finished() / S
+                self.FSM.ToTransition("toSystemStartup")
+            elif (rand_num == 1):
+                # error() / S
+                self.FSM.ToTransition("toStopped")
 
     def Exit(self):
         logging.info("exit")
@@ -222,10 +240,19 @@ class Stopped(State):
         """
         logging.info("System is Stopped")
         if self.startTime + self.timer <= clock():
-            if not (randint(1,3)%2):
+            rand_num = randint(0,1)
+            if (rand_num) == 0:
+                # system_startup_finished() / S
+                self.FSM.ToTransition("toInitializedReagents")
+            elif (rand_num == 1):
+                # error() / S
                 self.FSM.ToTransition("toSystemStartup")
-            else:
-                self.FSM.ToTransition("toStopped")
+            # elif (rand_num == 2):
+            #     # power_loss() / S
+            #     pass
+            # elif (rand_num == 3):
+            #     # user_click_shutdown
+            #     pass
 
     def Exit(self):
         logging.info("Stopped exit")

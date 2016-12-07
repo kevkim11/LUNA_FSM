@@ -17,7 +17,7 @@ class LunaSrv(Char):
         self.FSM.AddState("SystemStartup", SystemStartup(self.FSM))
         self.FSM.AddState("Stopped", Stopped(self.FSM))
         #
-        # self.FSM.AddState("InitializeReagents", InitializeReagent(self.FSM))
+        self.FSM.AddState("InitializeReagents", InitializeReagent(self.FSM))
         # self.FSM.AddState("Ready", Ready(self.FSM))
         # self.FSM.AddState("Running", Running(self.FSM))
         # self.FSM.AddState("Stopped", Stopped(self.FSM))
@@ -33,6 +33,7 @@ class LunaSrv(Char):
         :return:
         """
         self.FSM.AddTransition("toSystemStartup", Transition("SystemStartup"))
+        self.FSM.AddTransition("toInitializedReagents", Transition("InitializeReagents"))
         self.FSM.AddTransition("toStopped", Transition("Stopped"))
 
         ## Initalize State
