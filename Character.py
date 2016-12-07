@@ -12,7 +12,7 @@ class LunaSrv(Char):
         self.FSM = FSM(self)
 
         ## States
-        # self.FSM.AddState("poweroff", SystemStartup(self.FSM))
+        self.FSM.AddState("poweroff", SystemOff(self.FSM))
         #
         self.FSM.AddState("SystemStartup", SystemStartup(self.FSM))
         self.FSM.AddState("Stopped", Stopped(self.FSM))
@@ -37,7 +37,7 @@ class LunaSrv(Char):
         self.FSM.AddTransition("toStopped", Transition("Stopped"))
 
         ## Initalize State
-        self.FSM.SetState("SystemStartup")
+        self.FSM.SetState("poweroff")
 
     def Execute(self):
         """

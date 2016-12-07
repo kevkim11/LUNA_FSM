@@ -53,15 +53,20 @@ class SystemOff(State):
         super(SystemOff, self).__init__(FSM)
 
     def Enter(self):
-        logging.info("enter")
+        logging.info("enter SystemOff")
+        super(SystemOff, self).Enter()
 
 
     def Execute(self):
         logging.info("System is Off")
+        if self.startTime + self.timer <= clock():
+            self.FSM.ToTransition("toSystemStartup")
+
+
 
 
     def Exit(self):
-        logging.info("exit")
+        logging.info("exit systemOff")
 
 
 
