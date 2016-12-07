@@ -58,12 +58,17 @@ class SystemOff(State):
 
 
     def Execute(self):
+        """
+        State Off execution.
+        When the machine turns on, transitions from poweroff --> SystemStartup
+        :return:
+        """
         logging.info("System is Off")
+        # No matter states going form system off to system startup.
+        switch = True
         if self.startTime + self.timer <= clock():
-            self.FSM.ToTransition("toSystemStartup")
-
-
-
+            if switch == True:
+                self.FSM.ToTransition("toSystemStartup")
 
     def Exit(self):
         logging.info("exit systemOff")
@@ -144,8 +149,8 @@ class InitializeReagent(State):
         if self.startTime + self.timer <= clock():
             rand_num = randint(0,1)
             if (rand_num) == 0:
-                # system_startup_finished() / S
-                self.FSM.ToTransition("toSystemStartup")
+                # reagents_checked() / S
+                self.FSM.ToTransition("toReady")
             elif (rand_num == 1):
                 # error() / S
                 self.FSM.ToTransition("toStopped")
@@ -175,13 +180,21 @@ class Ready(State):
         """
         super(Ready, self).__init__(FSM)
 
-    def enter(self):
+    def Enter(self):
         logging.info("enter")
 
-    def execute(self):
+    def Execute(self):
         logging.info("System is Ready")
+        if self.startTime + self.timer <= clock():
+            rand_num = randint(0,1)
+            if (rand_num) == 0:
+                # start_run_clicked() / U
+                self.FSM.ToTransition("toRunning")
+            elif (rand_num == 1):
+                # error() / S
+                self.FSM.ToTransition("toStopped")
 
-    def exit(self):
+    def Exit(self):
         logging.info("exit")
 
 class Running(State):
@@ -205,14 +218,25 @@ class Running(State):
         """
         super(Running, self).__init__(FSM)
 
-    def enter(self):
+    def Enter(self):
         logging.info("enter")
 
-    def execute(self):
+    def Execute(self):
         logging.info("System is Ready")
+        if self.startTime + self.timer <= clock():
+            rand_num = randint(0,2)
+            if (rand_num) == 0:
+                # start_run_clicked() / U
+                self.FSM.ToTransition("toReady")
+            elif (rand_num == 1):
+                # error() / S
+                self.FSM.ToTransition("toStopped")
+            elif (rand_num == 2):
+                # stop_run_clicked() / U
+                self.FSM.ToTransition("toStopped")
 
-    def exit(self):
-        logging.info("exit")
+    def Exit(self):
+        logging.info("exit running")
 
 class Stopped(State):
     """
@@ -248,9 +272,9 @@ class Stopped(State):
             rand_num = randint(0,1)
             if (rand_num) == 0:
                 # system_startup_finished() / S
-                self.FSM.ToTransition("toInitializedReagents")
+                self.FSM.ToTransition("toShuttingDown")
             elif (rand_num == 1):
-                # error() / S
+                # restart_clicked() / S
                 self.FSM.ToTransition("toSystemStartup")
             # elif (rand_num == 2):
             #     # power_loss() / S
@@ -282,12 +306,20 @@ class ShuttingDown(State):
         """
         super(ShuttingDown, self).__init__(FSM)
 
-    def enter(self):
+    def Enter(self):
         logging.info("enter")
 
-    def execute(self):
+    def Execute(self):
         logging.info("System is Shutting Down")
+        if self.startTime + self.timer <= clock():
+            rand_num = randint(0,1)
+            if (rand_num) == 0:
+                # system_startup_finished() / S
+                self.FSM.ToTransition("toPowerOff")
+            elif (rand_num == 1):
+                # restart_clicked() / S
+                self.FSM.ToTransition("toStopped")
 
-    def exit(self):
-        logging.info("exit")
+    def Exit(self):
+        logging.info("exit from Shutting down")
 

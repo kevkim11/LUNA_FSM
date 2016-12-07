@@ -18,11 +18,10 @@ class LunaSrv(Char):
         self.FSM.AddState("Stopped", Stopped(self.FSM))
         #
         self.FSM.AddState("InitializeReagents", InitializeReagent(self.FSM))
-        # self.FSM.AddState("Ready", Ready(self.FSM))
-        # self.FSM.AddState("Running", Running(self.FSM))
-        # self.FSM.AddState("Stopped", Stopped(self.FSM))
-        # self.FSM.AddState("ShuttingDown", ShuttingDown(self.FSM))
-        # self.FSM.AddState("SystemStartup", SystemStartup(self.FSM))
+        self.FSM.AddState("Ready", Ready(self.FSM))
+        self.FSM.AddState("Running", Running(self.FSM))
+
+        self.FSM.AddState("ShuttingDown", ShuttingDown(self.FSM))
 
         ## Transitions
         """
@@ -35,6 +34,10 @@ class LunaSrv(Char):
         self.FSM.AddTransition("toSystemStartup", Transition("SystemStartup"))
         self.FSM.AddTransition("toInitializedReagents", Transition("InitializeReagents"))
         self.FSM.AddTransition("toStopped", Transition("Stopped"))
+        self.FSM.AddTransition("toReady", Transition("Ready"))
+        self.FSM.AddTransition("toRunning", Transition("Running"))
+        self.FSM.AddTransition("toShuttingDown", Transition("ShuttingDown"))
+        self.FSM.AddTransition("toPowerOff", Transition("poweroff"))
 
         ## Initalize State
         self.FSM.SetState("poweroff")
