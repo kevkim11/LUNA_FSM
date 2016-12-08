@@ -13,10 +13,9 @@ class LunaSrv(Char):
 
         ## States
         self.FSM.AddState("poweroff", SystemOff(self.FSM))
-        #
+
         self.FSM.AddState("SystemStartup", SystemStartup(self.FSM))
         self.FSM.AddState("Stopped", Stopped(self.FSM))
-        #
         self.FSM.AddState("InitializeReagents", InitializeReagent(self.FSM))
         self.FSM.AddState("Ready", Ready(self.FSM))
         self.FSM.AddState("Running", Running(self.FSM))

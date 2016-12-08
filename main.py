@@ -1,6 +1,5 @@
-from LUNA_FSM import *
+
 from State import *
-from Transition import *
 from Character import LunaSrv
 
 ##==================== Main ==========================
@@ -11,5 +10,5 @@ if __name__=="__main__":
         timeInterval = 1
         while(startTime+timeInterval > clock()): # MAKES SURE TO WAIT ONE SECOND so that it executes literally every second
             pass
-        print i
+        # print i
         l.Execute()

@@ -2,10 +2,11 @@ from random import randint
 from time import clock
 
 import logging
+import string
 
 ##==================== Logging Configuration ==========================
 FORMAT = '%(levelname)s:%(filename)s:%(funcName)s:%(message)s'
-logging.basicConfig(format=FORMAT, level=logging.INFO)
+logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 
 ##==================== STATES ==========================
 
@@ -65,10 +66,12 @@ class SystemOff(State):
         """
         logging.info("System is Off")
         # No matter states going form system off to system startup.
-        switch = True
-        if self.startTime + self.timer <= clock():
-            if switch == True:
-                self.FSM.ToTransition("toSystemStartup")
+        switch = raw_input("Would you like to turn on machine? (y/n)")
+        if switch == 'y':
+            self.FSM.ToTransition("toSystemStartup")
+        else:
+            pass
+
 
     def Exit(self):
         logging.info("exit systemOff")
@@ -102,19 +105,23 @@ class SystemStartup(State):
         """
         logging.info("System is in SystemStart State")
         if self.startTime + self.timer <= clock():
-            rand_num = randint(0,1)
+            rand_num = randint(0,3)
             if (rand_num) == 0:
                 # system_startup_finished() / S
+                logging.debug("system_startup_finished()")
                 self.FSM.ToTransition("toInitializedReagents")
             elif (rand_num == 1):
                 # error() / S
+                logging.debug("error()")
                 self.FSM.ToTransition("toStopped")
-            # elif (rand_num == 2):
-            #     # power_loss() / S
-            #     pass
-            # elif (rand_num == 3):
-            #     # user_click_shutdown
-            #     pass
+            elif (rand_num == 2):
+                # powerloss() / S
+                logging.debug("powerloss()")
+                self.FSM.ToTransition("toShuttingDown")
+            elif (rand_num == 3):
+                # user_clicked_shutdown() / U
+                logging.debug("user_clicked_shutdown()")
+                self.FSM.ToTransition("toShuttingDown")
 
     def Exit(self):
         logging.info("System Startup exit")
@@ -147,13 +154,19 @@ class InitializeReagent(State):
     def Execute(self):
         logging.info("System is Initialize Reagent")
         if self.startTime + self.timer <= clock():
-            rand_num = randint(0,1)
+            rand_num = randint(0,2)
             if (rand_num) == 0:
                 # reagents_checked() / S
+                logging.debug("reagents_checked()")
                 self.FSM.ToTransition("toReady")
             elif (rand_num == 1):
                 # error() / S
+                logging.debug("error()")
                 self.FSM.ToTransition("toStopped")
+            elif (rand_num == 2):
+                # shutdown_clicked() / U
+                logging.debug("shutdown_clicked()")
+                self.FSM.ToTransition("toShuttingDown")
 
     def Exit(self):
         logging.info("exit")
@@ -186,16 +199,26 @@ class Ready(State):
     def Execute(self):
         logging.info("System is Ready")
         if self.startTime + self.timer <= clock():
-            rand_num = randint(0,1)
+            rand_num = randint(0,3)
             if (rand_num) == 0:
                 # start_run_clicked() / U
+                logging.debug("start_run_clicked()")
                 self.FSM.ToTransition("toRunning")
             elif (rand_num == 1):
                 # error() / S
+                logging.debug("error()")
                 self.FSM.ToTransition("toStopped")
+            elif (rand_num == 2):
+                # powerloss() / S
+                logging.debug("powerloss()")
+                self.FSM.ToTransition("toShuttingDown")
+            elif (rand_num == 3):
+                # shutdown_clicked() / U
+                logging.debug("shutdown_clicked()")
+                self.FSM.ToTransition("toShuttingDown")
 
     def Exit(self):
-        logging.info("exit")
+        logging.info("exiting Ready State")
 
 class Running(State):
     """
@@ -226,13 +249,16 @@ class Running(State):
         if self.startTime + self.timer <= clock():
             rand_num = randint(0,2)
             if (rand_num) == 0:
-                # start_run_clicked() / U
-                self.FSM.ToTransition("toReady")
+                # run_complete() / S
+                logging.debug("run_complete()")
+                self.FSM.ToTransition("toInitializedReagents")
             elif (rand_num == 1):
                 # error() / S
+                logging.debug("error()")
                 self.FSM.ToTransition("toStopped")
             elif (rand_num == 2):
                 # stop_run_clicked() / U
+                logging.debug("stop_run_clicked()")
                 self.FSM.ToTransition("toStopped")
 
     def Exit(self):
@@ -271,20 +297,16 @@ class Stopped(State):
         if self.startTime + self.timer <= clock():
             rand_num = randint(0,1)
             if (rand_num) == 0:
-                # system_startup_finished() / S
+                # shutdown_clicked() / S
+                logging.debug("shutdown_clicked()")
                 self.FSM.ToTransition("toShuttingDown")
             elif (rand_num == 1):
                 # restart_clicked() / S
+                logging.debug("restart_clicked()")
                 self.FSM.ToTransition("toSystemStartup")
-            # elif (rand_num == 2):
-            #     # power_loss() / S
-            #     pass
-            # elif (rand_num == 3):
-            #     # user_click_shutdown
-            #     pass
 
     def Exit(self):
-        logging.info("Stopped exit")
+        logging.info("exiting from STOPPED")
 
 
 class ShuttingDown(State):
@@ -312,13 +334,13 @@ class ShuttingDown(State):
     def Execute(self):
         logging.info("System is Shutting Down")
         if self.startTime + self.timer <= clock():
-            rand_num = randint(0,1)
+            rand_num = randint(0,0)
             if (rand_num) == 0:
                 # system_startup_finished() / S
                 self.FSM.ToTransition("toPowerOff")
-            elif (rand_num == 1):
-                # restart_clicked() / S
-                self.FSM.ToTransition("toStopped")
+            # elif (rand_num == 1):
+            #     # restart_clicked() / S
+            #     self.FSM.ToTransition("toStopped")
 
     def Exit(self):
         logging.info("exit from Shutting down")
