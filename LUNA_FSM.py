@@ -13,6 +13,7 @@ class FSM(object):
         self.prevState = None # USE TO PREVENT LOOPING 2 STATE, didn't implement here but should implement for more complex FSM
         self.trans = None
 
+    """ """
     def AddTransition(self, transName, transition):
         """
         Cleaner way to add objects to dictionaries
@@ -51,10 +52,10 @@ class FSM(object):
         :return:
         """
         if self.trans:
-            self.curState.Exit() # Call the Exit function of the current state
-            self.trans.Execute() # Get the current transition function
-            self.SetState(self.trans.toState) # set the state to the transition's target state
-            self.curState.Enter() # Call the enter function of the current state because it's been switched over to the new state
-            self.trans = None # and finally set the trans to None
-        self.curState.Execute() # Lastly, execute the current function.
+            self.curState.Exit()                    # Call the Exit function of the current state
+            self.trans.Execute()                    # Get the current transition function
+            self.SetState(self.trans.toState)       # set the state to the transition's target state
+            self.curState.Enter()                   # Call the enter function of the current state because it's been switched over to the new state
+            self.trans = None                       # finally set the trans to None
+        self.curState.Execute()                     # Lastly, execute the current function.
 

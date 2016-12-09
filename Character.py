@@ -22,6 +22,8 @@ class LunaSrv(Char):
 
         self.FSM.AddState("ShuttingDown", ShuttingDown(self.FSM))
 
+        print self.FSM.states["SystemStartup"]
+
         ## Transitions
         """
         AddTransition(transName, transition)

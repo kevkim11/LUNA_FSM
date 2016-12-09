@@ -3,6 +3,7 @@ from time import clock
 
 import logging
 import string
+from LUNA_FSM import FSM
 
 ##==================== Logging Configuration ==========================
 FORMAT = '%(levelname)s:%(filename)s:%(funcName)s:%(message)s'
@@ -15,10 +16,11 @@ class State(object):
         self.FSM = FSM
         self.timer = 0
         self.startTime = 0
-    """
-    Three functions instead of just one (execute for main and transition)
-    Need Enter and Exit of each state.
-    """
+
+
+    def __str__(self):
+        pass
+
 
     def Enter(self):
         """
@@ -44,6 +46,10 @@ class State(object):
 
 ##==================== ACTUAL STATES ==========================
 class SystemOff(State):
+    """
+    2.0 SystemOff
+    This state is just the start the state.
+    """
     def __init__(self, FSM):
         """
         Going to as a FSM to be passed into the state constructor so that we can make adjustments and grab data
@@ -52,6 +58,9 @@ class SystemOff(State):
         :param FSM:
         """
         super(SystemOff, self).__init__(FSM)
+
+    def __str__(self):
+        return "SystemOff"
 
     def Enter(self):
         logging.info("enter SystemOff")
@@ -93,6 +102,9 @@ class SystemStartup(State):
         """
         super(SystemStartup, self).__init__(FSM)
 
+    def __str__(self):
+        return "SystemStartup"
+
     def Enter(self):
         logging.info("SystemStartup enter")
         super(SystemStartup, self).Enter()
@@ -105,7 +117,7 @@ class SystemStartup(State):
         """
         logging.info("System is in SystemStart State")
         if self.startTime + self.timer <= clock():
-            rand_num = randint(0,3)
+            rand_num = randint(0,2)
             if (rand_num) == 0:
                 # system_startup_finished() / S
                 logging.debug("system_startup_finished()")
@@ -115,10 +127,6 @@ class SystemStartup(State):
                 logging.debug("error()")
                 self.FSM.ToTransition("toStopped")
             elif (rand_num == 2):
-                # powerloss() / S
-                logging.debug("powerloss()")
-                self.FSM.ToTransition("toShuttingDown")
-            elif (rand_num == 3):
                 # user_clicked_shutdown() / U
                 logging.debug("user_clicked_shutdown()")
                 self.FSM.ToTransition("toShuttingDown")
@@ -137,7 +145,7 @@ class InitializeReagent(State):
     To:
     1) Ready (S) / reagents_checked()
     2) Stopped (S) / error()
-    3) Shutting Down (S) / power_loss() or (U) / shutdown_clicked()
+    3) Shutting Down (U) / shutdown_clicked()
     """
     def __init__(self, FSM):
         """
@@ -147,6 +155,9 @@ class InitializeReagent(State):
         :param FSM:
         """
         super(InitializeReagent, self).__init__(FSM)
+
+    def __str__(self):
+        return "InitalizeReagent"
 
     def Enter(self):
         logging.info("enter")
@@ -193,13 +204,16 @@ class Ready(State):
         """
         super(Ready, self).__init__(FSM)
 
+    def __str__(self):
+        return "Ready"
+
     def Enter(self):
         logging.info("enter")
 
     def Execute(self):
         logging.info("System is Ready")
         if self.startTime + self.timer <= clock():
-            rand_num = randint(0,3)
+            rand_num = randint(0,2)
             if (rand_num) == 0:
                 # start_run_clicked() / U
                 logging.debug("start_run_clicked()")
@@ -209,10 +223,6 @@ class Ready(State):
                 logging.debug("error()")
                 self.FSM.ToTransition("toStopped")
             elif (rand_num == 2):
-                # powerloss() / S
-                logging.debug("powerloss()")
-                self.FSM.ToTransition("toShuttingDown")
-            elif (rand_num == 3):
                 # shutdown_clicked() / U
                 logging.debug("shutdown_clicked()")
                 self.FSM.ToTransition("toShuttingDown")
@@ -240,6 +250,9 @@ class Running(State):
         :param FSM:
         """
         super(Running, self).__init__(FSM)
+
+    def __str__(self):
+        return "Running"
 
     def Enter(self):
         logging.info("enter")
@@ -283,6 +296,9 @@ class Stopped(State):
         """
         super(Stopped, self).__init__(FSM)
 
+    def __str__(self):
+        return "Stopped"
+
     def Enter(self):
         logging.info("Stopped State enter")
         super(Stopped, self).Enter()
@@ -297,11 +313,11 @@ class Stopped(State):
         if self.startTime + self.timer <= clock():
             rand_num = randint(0,1)
             if (rand_num) == 0:
-                # shutdown_clicked() / S
+                # shutdown_clicked() / User
                 logging.debug("shutdown_clicked()")
                 self.FSM.ToTransition("toShuttingDown")
             elif (rand_num == 1):
-                # restart_clicked() / S
+                # restart_clicked() / User
                 logging.debug("restart_clicked()")
                 self.FSM.ToTransition("toSystemStartup")
 
@@ -328,6 +344,9 @@ class ShuttingDown(State):
         """
         super(ShuttingDown, self).__init__(FSM)
 
+    def __str__(self):
+        return "ShuttingDown"
+
     def Enter(self):
         logging.info("enter")
 
@@ -338,9 +357,9 @@ class ShuttingDown(State):
             if (rand_num) == 0:
                 # system_startup_finished() / S
                 self.FSM.ToTransition("toPowerOff")
-            # elif (rand_num == 1):
-            #     # restart_clicked() / S
-            #     self.FSM.ToTransition("toStopped")
+            elif (rand_num == 1):
+                # restart_clicked() / S
+                self.FSM.ToTransition("toStopped")
 
     def Exit(self):
         logging.info("exit from Shutting down")
